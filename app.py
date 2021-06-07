@@ -18,6 +18,28 @@ from wtforms import StringField, validators, IntegerField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask import Flask, request, url_for, render_template, jsonify, send_from_directory, redirect
 
+import os
+import sys
+
+# Flask
+from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, redirect
+from werkzeug.utils import secure_filename
+from gevent.pywsgi import WSGIServer
+
+# TensorFlow and tf.keras
+import tensorflow as tf
+from tensorflow import keras
+
+from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+
+# Some utilites
+import numpy as np
+from util import base64_to_pil
+
+
+
 
 app = Flask(__name__)
 app.config['via_folder'] = 'images'
@@ -27,6 +49,55 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///via.sqlite'
 db = SQLAlchemy(app)
 admin = Admin(app)
+
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+model = MobileNetV2(weights='imagenet')
+MODEL_PATH = 'models/your_model.h5'
+
+
+
+def model_predict(img, model):
+    img = img.resize((224, 224))
+
+    # Preprocessing the image
+    x = image.img_to_array(img)
+    # x = np.true_divide(x, 255)
+    x = np.expand_dims(x, axis=0)
+
+    # Be careful how your trained model deals with the input
+    # otherwise, it won't make correct prediction!
+    x = preprocess_input(x, mode='tf')
+
+    preds = model.predict(x)
+    return preds
+
+
+@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        # Get the image from post request
+        img = base64_to_pil(request.json)
+
+        # Save the image to ./uploads
+        # img.save("./uploads/image.png")
+
+        # Make prediction
+        preds = model_predict(img, model)
+
+        # Process your result for human
+        pred_proba = "{:.3f}".format(np.amax(preds))    # Max probability
+        pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
+
+        result = str(pred_class[0][0][1])               # Convert to string
+        result = result.replace('_', ' ').capitalize()
+
+        # Serialize the result, you can add additional fields
+        return jsonify(result=result, probability=pred_proba)
+
+    return None
+
+
+
 
 
 class AnnotatedImage(db.Model):
@@ -136,12 +207,18 @@ admin.add_link(MenuLink(name='VIA', url='/via_template'))
 
 @app.route('/', methods=['GET'])
 def index():
-    return '<a href="/via_template">VIA</a><br><a href="/admin/annotatedimage">admin</a>'
+    return '<a href="/via_template">VIA</a><br><a href="/admin/annotatedimage">admin</a><br><a href="/modelPredict">modelPredict</a>'
 
 
 @app.route('/via_template', methods=['GET'])
 def via_template():
     return render_template('via_flask.html')
+
+@app.route('/modelPredict', methods=['GET'])
+def modelPredict():
+    # Main page
+    return render_template('index2.html')
+
 
 
 @app.route('/send_file/<path:folder>/<path:filename>')
@@ -237,5 +314,5 @@ generate_via_template()
 
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 8000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    port = int(os.getenv('PORT', 8001))
+    app.run(host='127.0.0.1', port=port, debug=True)
