@@ -1,15 +1,21 @@
-# Manual Image Annotator/Classifier with a Flask backend
-This is a Flask application, which uses [VGG Image Annotator](http://www.robots.ox.ac.uk/~vgg/) in order
+# Manual Image Annotator/Classifier with a Flask backend with Model Based Image Inference
+This repository is merging of two Flask application, 
+
+1. [VGG Image Annotator](http://www.robots.ox.ac.uk/~vgg/) in order
 to manually mark regions on images, which can later be used as input regions for image
 classification/machine learning projects. The problem with running VIA as standalone program
 in the browser is that was not an easy way to organise your data. Here, this app comes into play.
 It saves the images and the connected regions in a database, which can easily
 be edited, reloaded, and deleted, both one by one and in batches.
 
+2. A pretty and customizable web app to deploy your DL model with ease https://github.com/mtobeiyf/keras-flask-deploy-webapp#readme
+
+
+
 To make it run locally:
 ```
-git clone https://github.com/joost823/flask-via
-cd flask-via
+git clone https://github.com/dpaul0501/ImageAnnotatorAndPrediction/
+cd ImageAnnotatorAndPrediction
 pip install -r requirements.txt
 ```
 
@@ -27,37 +33,24 @@ flask run
 
 VGG Image Annotator (VIA) is an open source project developed at the
 [Visual Geometry Group](http://www.robots.ox.ac.uk/~vgg/) and released under
+
+
+
 the BSD-2 clause license. This work is supported by EPSRC programme grant
 Seebibyte: Visual Search for the Era of Big Data ([EP/M013774/1](http://www.seebibyte.org/index.html)).
 Visit the [VGG software page](http://www.robots.ox.ac.uk/~vgg/software/via/) for more details.
 
+# Deploy Keras Model with Flask as Web App in 10 Minutes
 
-## Features:
-  * based solely on HTML, CSS and Javascript (no external javascript libraries)
-  * can be used off-line (full application in a single html file of size &lt; 200KB)
-  * requires nothing more than a modern web browser (tested on Firefox, Chrome and Safari)
-  * supported region shapes: rectangle, circle, ellipse, polygon and point
-  * import/export of region data in csv and json file format
+https://github.com/mtobeiyf/keras-flask-deploy-webapp#readme
 
 
-## Downloads
- * VGG Image Annotator (VIA)
-   * [via-1.0.5.zip](http://www.robots.ox.ac.uk/~vgg/software/via/downloads/via-1.0.5.zip) : includes the VIA application (&lt; 200KB) and its demo
-   * [via-src-1.0.5.zip](http://www.robots.ox.ac.uk/~vgg/software/via/downloads/via-src-1.0.5.zip) : source code and [code documentation](https://gitlab.com/vgg/via/blob/master/CodeDoc.md)
-   * [via.html](http://www.robots.ox.ac.uk/~vgg/software/via/via.html) : online version of VIA application
-   * [via_demo.html](http://www.robots.ox.ac.uk/~vgg/software/via/via_demo.html) : live online demo (with preloadd images and regions)
 
 
-## Docs
- * Getting Started : this can be accessed by pressing F1 key in the VIA application.
- * [VIA Software page @ VGG](http://www.robots.ox.ac.uk/~vgg/software/via/)
- * [VIA Wikipedia page](https://en.wikipedia.org/wiki/VGG_Image_Annotator)
+## Credits
+https://github.com/joost823/flask-via
 
+https://github.com/mtobeiyf/keras-flask-deploy-webapp
 
-## License
-VIA is an open source project released under the
-[BSD-2 clause license](https://gitlab.com/vgg/via/blob/master/LICENSE).
+Author: dpaul0501
 
-## Author
-[Abhishek Dutta](mailto:adutta@robots.ox.ac.uk)  
-Aug. 31, 2016
